@@ -1,4 +1,5 @@
-import { SolanaAgentKit } from "./agent";
+import { SolanaAgentKit } from "../src/agent";
+
 import { createSolanaTools } from "./langchain";
 
 export { SolanaAgentKit, createSolanaTools };
