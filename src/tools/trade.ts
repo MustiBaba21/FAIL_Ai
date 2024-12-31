@@ -2,6 +2,18 @@ import { VersionedTransaction, PublicKey } from "@solana/web3.js";
 import { SolanaAgentKit } from "../index";
 import { TOKENS, DEFAULT_OPTIONS, JUP_API } from "../constants";
 import { getMint } from "@solana/spl-token";
+
+// Add interface for Jupiter API response
+interface JupiterQuoteResponse {
+  // Add other properties as needed
+  [key: string]: any;
+}
+
+interface JupiterSwapResponse {
+  swapTransaction: string;
+  [key: string]: any;
+}
+
 /**
  * Swap tokens using Jupiter Exchange
  * @param agent SolanaAgentKit instance
@@ -40,7 +52,7 @@ export async function trade(
           `&onlyDirectRoutes=true` +
           `&maxAccounts=20`,
       )
-    ).json();
+    ).json() as JupiterQuoteResponse;
 
     // Get serialized transaction
     const { swapTransaction } = await (
@@ -57,7 +69,8 @@ export async function trade(
           prioritizationFeeLamports: "auto",
         }),
       })
-    ).json();
+    ).json() as JupiterSwapResponse;
+
     // Deserialize transaction
     const swapTransactionBuf = Buffer.from(swapTransaction, "base64");
 

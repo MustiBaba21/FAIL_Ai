@@ -1,7 +1,10 @@
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import bs58 from "bs58";
 import Decimal from "decimal.js";
+import { TwitterApi } from 'twitter-api-v2';
 import { DEFAULT_OPTIONS } from "../constants";
+import { TwitterBot } from '../twitter/twitter_bot';
+import { TwitterConfig } from '../twitter/types';
 import {
   deploy_collection,
   deploy_token,
@@ -70,16 +73,21 @@ export class SolanaAgentKit {
   public wallet: Keypair;
   public wallet_address: PublicKey;
   public openai_api_key: string | null;
+  private twitterBot?: TwitterBot;
 
   constructor(
     private_key: string,
     rpc_url = "https://api.mainnet-beta.solana.com",
     openai_api_key: string | null = null,
+    twitterConfig?: TwitterConfig
   ) {
     this.connection = new Connection(rpc_url);
     this.wallet = Keypair.fromSecretKey(bs58.decode(private_key));
     this.wallet_address = this.wallet.publicKey;
     this.openai_api_key = openai_api_key;
+    if (twitterConfig) {
+      this.twitterBot = new TwitterBot(twitterConfig, this);
+    }
   }
 
   // Tool methods
@@ -411,5 +419,19 @@ export class SolanaAgentKit {
   }
   async createTiplink(amount: number, splmintAddress?: PublicKey) {
     return create_TipLink(this, amount, splmintAddress);
+  }
+
+  async startTwitterBot(): Promise<void> {
+    if (!this.twitterBot) {
+      throw new Error('Twitter bot not initialized. Please provide Twitter configuration.');
+    }
+    await this.twitterBot.startStreamingMentions();
+  }
+
+  async respondToTweet(tweetId: string, mentionText: string) {
+    if (!this.twitterBot) {
+      throw new Error('Twitter bot not initialized. Please provide Twitter configuration.');
+    }
+    return await this.twitterBot.respondToMention(tweetId, mentionText);
   }
 }

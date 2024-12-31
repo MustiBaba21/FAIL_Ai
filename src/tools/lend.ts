@@ -1,6 +1,12 @@
 import { VersionedTransaction } from "@solana/web3.js";
 import { SolanaAgentKit } from "../index";
 
+// Add interface for Lulo API response
+interface LuloResponse {
+  transaction: string;
+  [key: string]: any; // For any additional properties
+}
+
 /**
  * Lend tokens for yields using Lulo
  * @param agent SolanaAgentKit instance
@@ -25,7 +31,7 @@ export async function lendAsset(
       },
     );
 
-    const data = await response.json();
+    const data = await response.json() as LuloResponse;
 
     // Deserialize the transaction
     const luloTxn = VersionedTransaction.deserialize(

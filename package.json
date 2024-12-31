@@ -11,7 +11,8 @@
     "generate": "ts-node src/utils/keypair.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "twitter-bot": "ts-node scripts/run-twitter-bot.ts"
   },
   "engines": {
     "node": ">=22.0.0",
